@@ -1,0 +1,28 @@
+.navbar__bg {
+    background-color: #2196F3;
+    height: 64px;
+    margin-bottom: 48px;
+}
+
+.nav {
+    height: 64px;
+    display: flex;
+    align-items: center;
+
+    li {
+        height: 100%;
+
+        a {
+            height: 100%;
+            padding: 0 23px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        .selected {
+            background-color: #1E88E5;
+        }
+    }
+}
