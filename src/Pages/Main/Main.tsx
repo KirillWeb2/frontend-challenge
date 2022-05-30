@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import Kittens from '../../components/Kittens/Kittens'
 import { useAppDispatch, useAppSelector } from '../../hooks/ReduxHooks'
+import { useStorage } from '../../hooks/useStorage'
 import { IKitten } from '../../models/Kitten'
 import { kittenAPI } from '../../services/KittenService'
 import { kittenSlice } from '../../store/slices/kittenSlice'
@@ -9,6 +10,7 @@ import { kittenSlice } from '../../store/slices/kittenSlice'
 const Main: FC = () => {
     // hooks
     const { ref, inView } = useInView({ threshold: 0, })
+    const { push } = useStorage()
 
     // local store
     const limit = 15
@@ -16,15 +18,12 @@ const Main: FC = () => {
 
     // store
     const dispatch = useAppDispatch()
-    const { kittens } = useAppSelector(state => state.reducer)
+    const { kittens, fav_kittens } = useAppSelector(state => state.reducer)
     const { getKittens, isFocusImg } = kittenSlice.actions
 
     // requests
     const { data } = kittenAPI.useGetKittensQuery({ limit, page })
-    const [pushFavourite, { }] = kittenAPI.usePushFavouriteMutation()
 
-    // functions
-    const push = (id: string) => pushFavourite({ image_id: id })
     const isFocusKittens = (id: string) => dispatch(isFocusImg({ key: "kittens", id }))
 
     // effects
@@ -50,7 +49,19 @@ const Main: FC = () => {
 
     return (
         <div>
-            <Kittens massive={kittens} managingFavourite={push} isFocus={isFocusKittens} />
+            <div className='list'>
+                {
+                    kittens.map((i: IKitten, index: number) => {
+                        // отрисовываем картинки и если картинка лежит в любимых, то передаём просами
+                        // isLove true, и наоборот
+                        if (fav_kittens.find((k: IKitten) => i.id === k.id)) {
+                            return <Kittens key={index} item={i} managingFavourite={push} isFocus={isFocusKittens} isLove={true} />
+                        } else {
+                            return <Kittens key={index} item={i} managingFavourite={push} isFocus={isFocusKittens} isLove={false} />
+                        }
+                    })
+                }
+            </div>
             {
                 (data && data.length !== 0) &&
                 <div ref={ref} className='obs'>

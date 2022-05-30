@@ -1,10 +1,10 @@
-import { IFavKitten, IKitten } from './../../models/Kitten';
+import { IKitten } from './../../models/Kitten';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 
 interface IInitialState {
   kittens: IKitten[]
-  fav_kittens: IFavKitten[]
+  fav_kittens: IKitten[]
 }
 interface IFocusImg {
   key: "kittens" | "fav_kittens"
@@ -27,9 +27,10 @@ const focus = (massive: any[], id: string) => {
     }
   })
 }
+
 const focusFav = (massive: any[], id: string) => {
   return massive.map((i: any) => {
-    if (i.image_id  === id) {
+    if (i.id  === id) {
       return {
         ...i,
         isHover: true
@@ -57,8 +58,14 @@ export const kittenSlice = createSlice({
     getKittens(state, action: PayloadAction<IKitten[]>) {
       state.kittens = [...state.kittens, ...action.payload]
     },
-    getFavKittens(state, action: PayloadAction<IFavKitten[]>) {
+    getFavKittens(state, action: PayloadAction<IKitten[]>) {
       state.fav_kittens = action.payload
+    },
+    getNewFavourite(state, action: PayloadAction<IKitten>) {
+      state.fav_kittens = [...state.fav_kittens, action.payload]
+    },
+    deleteFavKitten(state, action: PayloadAction<IKitten>) {
+      state.fav_kittens = state.fav_kittens.filter((i: IKitten) => i.id !== action.payload.id)
     },
     isFocusImg(state, action: PayloadAction<IFocusImg>) {
       if (action.payload.key === 'kittens') {

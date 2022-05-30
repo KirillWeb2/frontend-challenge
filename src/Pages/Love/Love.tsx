@@ -1,44 +1,33 @@
-import React, { FC, useEffect } from 'react'
-import FavKittens from '../../components/FavKittens/FavKittens'
+import React, { FC } from 'react'
+import Kittens from '../../components/Kittens/Kittens'
 import { useAppDispatch, useAppSelector } from '../../hooks/ReduxHooks'
-import { IFavKitten } from '../../models/Kitten'
-import { kittenAPI } from '../../services/KittenService'
+import { useStorage } from '../../hooks/useStorage'
+import { IKitten } from '../../models/Kitten'
 import { kittenSlice } from '../../store/slices/kittenSlice'
 
 
 const Love: FC = () => {
-    // store
+    const { del } = useStorage()
+
     const dispatch = useAppDispatch()
     const { fav_kittens } = useAppSelector(state => state.reducer)
-    const { getFavKittens, isFocusImg } = kittenSlice.actions
+    const { isFocusImg } = kittenSlice.actions
 
-    // request
-    const { data } = kittenAPI.useGetFavouritesQuery('')
-    const [del, { }] = kittenAPI.useDelFavouriteMutation()
-
-    // functions
-    const deleteFav = (id: string) => del(id)
     const isFocusFavourite = (id: string) => dispatch(isFocusImg({ key: "fav_kittens", id }))
 
-    // effects
-    useEffect(() => {
-        if (data) {
-            // добавляю к объектам поля isHover для того, чтобы понимать, когда на элемент наводят мышкой
-            const massive = data.map((i: IFavKitten) => {
-                return {
-                    ...i, isHover: false
-                }
-            })
-            dispatch(getFavKittens(massive))
-        }
-    }, [data])
-
-    if (!data) {
+    if (!fav_kittens) {
         return <h1>Loading...</h1>
     }
 
     return (
-        <FavKittens massive={fav_kittens} managingFavourite={deleteFav} isFocus={isFocusFavourite} />
+        <div className='list'>
+            {
+                (fav_kittens && fav_kittens.length !== 0) &&
+                fav_kittens.map((i: IKitten, index) =>
+                    <Kittens key={index} item={i} managingFavourite={del} isFocus={isFocusFavourite} isLove={true} />
+                )
+            }
+        </div>
     )
 }
 
