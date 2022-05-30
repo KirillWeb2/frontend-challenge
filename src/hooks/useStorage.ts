@@ -26,6 +26,10 @@ export const useStorage = () => {
                 localStorage.setItem(kittenStorage, JSON.stringify({
                     fav_kittens: [...storage.fav_kittens, kitten]
                 }))
+            } else {
+                localStorage.setItem(kittenStorage, JSON.stringify({
+                    fav_kittens: []
+                }))
             }
         }
     }
