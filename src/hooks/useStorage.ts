@@ -17,17 +17,17 @@ export const useStorage = () => {
 
         dispatch(getNewFavourite(kitten))
 
-        const data = localStorage.getItem(kittenStorage)
+        const data = sessionStorage.getItem(kittenStorage)
 
         if (data) {
             const storage = JSON.parse(data)
 
             if (storage && storage.fav_kittens) {
-                localStorage.setItem(kittenStorage, JSON.stringify({
+                sessionStorage.setItem(kittenStorage, JSON.stringify({
                     fav_kittens: [...storage.fav_kittens, kitten]
                 }))
             } else {
-                localStorage.setItem(kittenStorage, JSON.stringify({
+                sessionStorage.setItem(kittenStorage, JSON.stringify({
                     fav_kittens: []
                 }))
             }
@@ -36,13 +36,13 @@ export const useStorage = () => {
 
     const del = (kitten: IKitten) => {
         dispatch(deleteFavKitten(kitten))
-        const data = localStorage.getItem(kittenStorage)
+        const data = sessionStorage.getItem(kittenStorage)
 
         if (data) {
             const storage = JSON.parse(data)
 
             if (storage && storage.fav_kittens) {
-                localStorage.setItem(kittenStorage, JSON.stringify({
+                sessionStorage.setItem(kittenStorage, JSON.stringify({
                     fav_kittens: storage.fav_kittens.filter((i: IKitten) => i.id !== kitten.id)
                 }))
             }
@@ -52,19 +52,20 @@ export const useStorage = () => {
     }
 
     useEffect(() => {
-        const data = localStorage.getItem(kittenStorage)
+        const data = sessionStorage.getItem(kittenStorage)
 
         if (data) {
             const storage = JSON.parse(data)
 
             if (storage && storage.fav_kittens) {
                 dispatch(getFavKittens(storage.fav_kittens))
-            } else {
-                localStorage.setItem(kittenStorage, JSON.stringify({
-                    fav_kittens: []
-                }))
             }
+        } else {
+            sessionStorage.setItem(kittenStorage, JSON.stringify({
+                fav_kittens: []
+            }))
         }
+
     }, [])
 
 
